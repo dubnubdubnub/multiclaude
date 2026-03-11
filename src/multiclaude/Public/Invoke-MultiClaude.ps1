@@ -5,19 +5,23 @@ function Invoke-MultiClaude {
         panes and git worktrees.
 
     .DESCRIPTION
-        Spawns a coordinator, refactor, and feature Claude in separate worktrees,
-        each in its own terminal pane. On Windows, uses Windows Terminal; on
-        macOS/Linux, uses tmux. Instances coordinate via GitHub Issues.
+        Spawns a coordinator and feature Claude in separate worktrees, each in its
+        own terminal pane. On Windows, uses Windows Terminal; on macOS/Linux, uses
+        tmux. Instances coordinate via GitHub Issues.
 
     .PARAMETER Command
-        The subcommand to run: launch (default), add-feature, cleanup.
+        The subcommand to run: launch (default), refactor, test, add-feature, cleanup.
 
     .PARAMETER Name
         Name for the feature (used with add-feature command).
 
     .EXAMPLE
         Invoke-MultiClaude
-        # Launch default layout (coordinator + refactor + feature)
+        # Launch default layout (coordinator + feature)
+
+    .EXAMPLE
+        multiclaude refactor
+        # Add a refactor/test Claude pane
 
     .EXAMPLE
         multiclaude add-feature "bom-export"
@@ -42,6 +46,8 @@ function Invoke-MultiClaude {
     switch ($Command.ToLower()) {
         "launch"       { Invoke-Launch }
         ""             { Invoke-Launch }
+        "refactor"     { Invoke-AddRefactor }
+        "test"         { Invoke-AddRefactor }
         "add-feature"  {
             if (-not $Name) {
                 throw "Usage: multiclaude add-feature <name>"
@@ -51,7 +57,9 @@ function Invoke-MultiClaude {
         "cleanup"      { Invoke-Cleanup }
         default {
             Write-Host "Usage:" -ForegroundColor White
-            Write-Host "  multiclaude                          Launch coordinator + refactor + feature"
+            Write-Host "  multiclaude                          Launch coordinator + feature"
+            Write-Host "  multiclaude refactor                 Add a refactor/test Claude pane"
+            Write-Host "  multiclaude test                     (alias for refactor)"
             Write-Host "  multiclaude add-feature <name>       Add a new feature Claude pane"
             Write-Host "  multiclaude cleanup                  Remove all multiclaude worktrees"
             throw "Unknown command: $Command"
