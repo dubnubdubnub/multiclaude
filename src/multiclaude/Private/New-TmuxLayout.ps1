@@ -30,11 +30,16 @@ function New-TmuxLayout {
     tmux send-keys -t "${sessionName}:0.0" 'claude' Enter
 
     # Full-height columns, each split from the previous rightmost pane.
-    # First split gets (N)/(N+1) percent so columns end up equal width.
+    # Left column (Coordinator/Operator) gets 40% width; right columns split the remaining 60% equally.
+    $leftFraction = 0.4
     $n = $Columns.Count
     for ($i = 0; $i -lt $n; $i++) {
         $col = $Columns[$i]
-        $pct = [math]::Round(100 * ($n - $i) / ($n - $i + 1))
+        if ($i -eq 0) {
+            $pct = [math]::Round(100 * (1 - $leftFraction))
+        } else {
+            $pct = [math]::Round(100 * ($n - $i) / ($n - $i + 1))
+        }
         $targetPane = $i  # split from the pane that was last on the right
 
         tmux split-window -h -p $pct -t "${sessionName}:0.${targetPane}" -c $col.Dir

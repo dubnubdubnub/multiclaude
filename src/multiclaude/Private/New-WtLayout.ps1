@@ -30,13 +30,17 @@ function New-WtLayout {
     )
 
     # Add full-height columns left to right.
-    # First column split gets (N)/(N+1) of the space so all columns end up equal width.
-    # e.g. 2 columns: first split takes 2/3, second split takes 1/2 of that = 1/3 each.
+    # Left column (Coordinator/Operator) gets 40% width; right columns split the remaining 60% equally.
+    $leftFraction = 0.4
     $n = $Columns.Count
     for ($i = 0; $i -lt $n; $i++) {
         $col = $Columns[$i]
         $dir = Resolve-NativePath $col.Dir
-        $size = [math]::Round(($n - $i) / ($n - $i + 1), 4)
+        if ($i -eq 0) {
+            $size = [math]::Round(1 - $leftFraction, 4)
+        } else {
+            $size = [math]::Round(($n - $i) / ($n - $i + 1), 4)
+        }
 
         $wtArgs += ';'
         $wtArgs += @('split-pane', '-V', '-s', "$size", '--title', $col.Title, '-d', "`"$dir`"")
