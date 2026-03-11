@@ -41,8 +41,7 @@ Describe 'Invoke-MultiClaude' {
 }
 
 Describe 'Get-TerminalMultiplexer' {
-    It 'returns wt or tmux' {
-        # This is an internal function, access via module scope
+    It 'returns wt or tmux (a multiplexer must be available)' {
         $mux = & (Get-Module multiclaude) { Get-TerminalMultiplexer }
         $mux | Should -BeIn @('wt', 'tmux')
     }
