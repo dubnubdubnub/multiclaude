@@ -12,12 +12,19 @@ function Invoke-AddRefactor {
     $refactorDir = New-MultiClaudeWorktree $repoRoot $repoName "refactor" "claude/refactor"
     Install-RoleClaude $refactorDir (Join-Path $rolesDir "refactor.md")
 
-    # Add as a full-height column to the right
+    # Insert as a full-height column between the left column and the first right column.
+    # Strategy: focus the leftmost full-height pane (Feature), split it to create Refactor
+    # to its right, then move-pane left to swap Refactor into the middle position.
     switch ($mux) {
         'wt' {
             $dir = Resolve-NativePath $refactorDir
-            $moveFocus = "move-focus -d right ; " * 10
-            $wtCmd = "wt -w multiclaude ${moveFocus}split-pane -V --title `"Refactor`" -d `"$dir`" -- claude"
+            $goLeft = "move-focus -d left ; " * 10
+            $wtCmd = "wt -w multiclaude " +
+                "${goLeft}" +                                          # land on Operator/Coordinator
+                "move-focus -d right ; " +                             # move to first full-height column
+                "split-pane -V --title `"Refactor`" -d `"$dir`" -- claude ; " + # Refactor to its right
+                "move-focus -d right ; " +                             # focus the new Refactor pane
+                "move-pane -d left"                                    # swap Refactor left into the middle
             cmd /c $wtCmd
         }
         'tmux' {
