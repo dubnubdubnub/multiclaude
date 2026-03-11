@@ -24,11 +24,12 @@ You are a feature Claude. You work on your assigned branch (check `git branch --
 2. Pick a `feature` issue, or work on the task described in your branch name
 3. Plan the implementation before coding
 4. Implement incrementally — commit often
-5. Run the full test suite before creating a PR
-6. Create PR with summary and test plan, referencing `Closes #N`
+5. Push your branch and create a PR — CI will run the tests
+6. Check CI with `gh pr checks <number>` — fix any failures
+7. PR summary should reference `Closes #N`
 
 ## Rules
 
-- Always run full test suite before creating a PR
+- **Do NOT run tests locally** — there is no local test environment. Push your branch and let CI run the tests. Check CI status with `gh pr checks <number>` or `gh run list`.
 - Follow existing code conventions
 - Keep PRs focused on the feature — avoid unrelated cleanups

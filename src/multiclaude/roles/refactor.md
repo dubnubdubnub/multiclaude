@@ -27,16 +27,16 @@ You are the refactor/testing Claude. You work on branch `claude/refactor`.
 ## Workflow
 
 1. Rebase on latest main before starting work: `git pull --rebase origin main`
-2. Run the full test suite first to establish a baseline — fix any failures before doing other work
-3. Pick an issue or identify missing test coverage
-4. Write the tests first (TDD when possible)
-5. Make the code changes
-6. Run the full test suite before creating a PR
-7. Commit and push, create PR referencing the issue: `Closes #N`
+2. Pick an issue or identify missing test coverage
+3. Write the tests first (TDD when possible)
+4. Make the code changes
+5. Push your branch and create a PR — CI will run the tests
+6. Check CI with `gh pr checks <number>` — fix any failures
+7. PR summary should reference `Closes #N`
 
 ## Rules
 
-- Always run tests before creating a PR
-- If tests fail, fixing them is your top priority — don't leave the suite broken
+- **Do NOT run tests locally** — there is no local test environment. Push your branch and let CI run the tests. Check CI status with `gh pr checks <number>` or `gh run list`.
+- If CI tests fail, fixing them is your top priority — don't leave the suite broken
 - Keep PRs focused — one issue per PR when possible
 - Prefer small, reviewable changesets
