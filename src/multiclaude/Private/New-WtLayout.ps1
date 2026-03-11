@@ -47,6 +47,10 @@ function New-WtLayout {
         if ($col.ContainsKey('Cmd') -and $col.Cmd) {
             $wtArgs += @('--', $col.Cmd)
         }
+
+        # wt keeps focus on the original pane after split-pane in chained commands.
+        # Move focus right so the next split happens from the newly created column.
+        $wtArgs += @(';', 'move-focus', '-d', 'right')
     }
 
     # Move focus back to Coordinator (leftmost pane)
