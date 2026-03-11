@@ -3,7 +3,7 @@ function New-TmuxLayout {
     param(
         [Parameter(Mandatory)][string]$RepoRoot,
         [Parameter(Mandatory)][string]$CoordinatorDir,
-        [Parameter(Mandatory)][hashtable[]]$Columns
+        [Parameter()][hashtable[]]$Columns = @()
     )
 
     # Layout:
