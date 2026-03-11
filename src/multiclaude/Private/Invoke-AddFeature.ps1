@@ -22,7 +22,10 @@ function Invoke-AddFeature {
     switch ($mux) {
         'wt' {
             $dir = Resolve-NativePath $featureDir
-            $wtCmd = "wt -w multiclaude split-pane -V --title `"Feature: $safeName`" -d `"$dir`" -- claude"
+            # Move focus to the rightmost pane before splitting so the new column
+            # appears at the far right edge, not beside the currently focused pane.
+            $moveFocus = "move-focus -d right ; " * 10
+            $wtCmd = "wt -w multiclaude ${moveFocus}split-pane -V --title `"Feature: $safeName`" -d `"$dir`" -- claude"
             cmd /c $wtCmd
         }
         'tmux' {
