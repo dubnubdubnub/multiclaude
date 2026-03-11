@@ -1,0 +1,38 @@
+name: Publish to PSGallery
+
+on:
+  push:
+    tags: ['v*']
+
+jobs:
+  publish:
+    runs-on: windows-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Validate tag matches manifest version
+        shell: pwsh
+        run: |
+          $tag = $env:GITHUB_REF_NAME -replace '^v', ''
+          $manifest = Import-PowerShellDataFile ./src/multiclaude/multiclaude.psd1
+          if ($manifest.ModuleVersion -ne $tag) {
+            throw "Tag version '$tag' does not match manifest version '$($manifest.ModuleVersion)'"
+          }
+          Write-Host "Version $tag validated"
+
+      - name: Run tests
+        shell: pwsh
+        run: |
+          Install-Module -Name Pester -MinimumVersion 5.0 -Force -Scope CurrentUser
+          $config = New-PesterConfiguration
+          $config.Run.Path = './tests'
+          $config.Run.Exit = $true
+          Invoke-Pester -Configuration $config
+
+      - name: Publish module
+        shell: pwsh
+        env:
+          PSGALLERY_API_KEY: ${{ secrets.PSGALLERY_API_KEY }}
+        run: |
+          Publish-Module -Path ./src/multiclaude -NuGetApiKey $env:PSGALLERY_API_KEY -Verbose
