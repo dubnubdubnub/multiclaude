@@ -25,7 +25,7 @@ function New-WtLayout {
     $repoDir  = Resolve-NativePath $RepoRoot
 
     $wtArgs = @(
-        '--window', 'multiclaude',
+        '--window', 'multiclaude', '--maximized',
         'new-tab', '--title', 'Coordinator', '-d', "`"$coordDir`"", '--', 'claude'
     )
 
