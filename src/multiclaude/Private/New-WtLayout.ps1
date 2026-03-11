@@ -43,7 +43,7 @@ function New-WtLayout {
         }
 
         $wtArgs += ';'
-        $wtArgs += @('split-pane', '-V', '-s', "$size", '--title', $col.Title, '-d', "`"$dir`"")
+        $wtArgs += @('split-pane', '-V', '-s', "$size", '--title', "`"$($col.Title)`"", '-d', "`"$dir`"")
         if ($col.ContainsKey('Cmd') -and $col.Cmd) {
             $wtArgs += @('--', $col.Cmd)
         }
