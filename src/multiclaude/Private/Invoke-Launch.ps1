@@ -9,14 +9,16 @@ function Invoke-Launch {
 
     Write-Host "`n=== multiclaude: launching for $repoName ===" -ForegroundColor Magenta
 
-    # 1. Create worktrees
+    # 1. Coordinator runs directly from the repo root (already on main)
+    $coordDir = $repoRoot
+    Write-Host "`nInjecting coordinator role..." -ForegroundColor White
+    Install-RoleClaude $coordDir (Join-Path $rolesDir "coordinator.md")
+
+    # 2. Create worktrees for other roles
     Write-Host "`nCreating worktrees..." -ForegroundColor White
-    $coordDir   = New-MultiClaudeWorktree $repoRoot $repoName "coordinator" "main"
     $featureDir = New-MultiClaudeWorktree $repoRoot $repoName "feature-1" "claude/feature-1"
 
-    # 2. Inject role CLAUDE.md files
     Write-Host "`nInjecting role definitions..." -ForegroundColor White
-    Install-RoleClaude $coordDir   (Join-Path $rolesDir "coordinator.md")
     Install-RoleClaude $featureDir (Join-Path $rolesDir "feature.md")
 
     # 3. Launch terminal layout
