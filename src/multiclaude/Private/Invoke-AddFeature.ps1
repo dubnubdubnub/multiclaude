@@ -18,14 +18,15 @@ function Invoke-AddFeature {
     $featureDir = New-MultiClaudeWorktree $repoRoot $repoName $role $branch
     Install-RoleClaude $featureDir (Join-Path $rolesDir "feature.md")
 
+    # Add as a full-height column to the right
     switch ($mux) {
         'wt' {
             $dir = Resolve-NativePath $featureDir
-            $wtCmd = "wt -w multiclaude split-pane -H --title `"Feature: $safeName`" -d `"$dir`" -- claude"
+            $wtCmd = "wt -w multiclaude split-pane -V --title `"Feature: $safeName`" -d `"$dir`" -- claude"
             cmd /c $wtCmd
         }
         'tmux' {
-            tmux split-window -v -t multiclaude -c $featureDir
+            tmux split-window -h -t multiclaude -c $featureDir
             tmux send-keys -t multiclaude 'claude' Enter
         }
     }

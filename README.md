@@ -7,14 +7,16 @@ Spawns a coordinator, refactor, and feature Claude — each in its own worktree 
 ## Layout
 
 ```
-┌──────────────┬──────────────┐
-│   Operator   │ Coordinator  │
-│   (shell)    │  (claude)    │
-├──────────────┼──────────────┤
-│  Feature #1  │   Refactor   │
-│  (claude)    │  (claude)    │
-└──────────────┴──────────────┘
+┌──────────────┬──────────────┬──────────────┐
+│ Coordinator  │              │              │
+│  (claude)    │   Refactor   │  Feature #1  │
+├──────────────┤   (claude)   │  (claude)    │
+│  Operator    │              │              │
+│  (shell)     │              │              │
+└──────────────┴──────────────┴──────────────┘
 ```
+
+Additional features are added as full-height columns to the right.
 
 - **Windows**: [Windows Terminal](https://github.com/microsoft/terminal) split panes
 - **macOS/Linux**: tmux split panes

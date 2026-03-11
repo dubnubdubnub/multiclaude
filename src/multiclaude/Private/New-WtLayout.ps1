@@ -2,52 +2,57 @@ function New-WtLayout {
     [CmdletBinding()]
     param(
         [Parameter(Mandatory)][string]$RepoRoot,
-        [Parameter(Mandatory)][hashtable[]]$Panes
+        [Parameter(Mandatory)][string]$CoordinatorDir,
+        [Parameter(Mandatory)][hashtable[]]$Columns
     )
 
-    # $Panes: array of @{ Title; Dir; Cmd } where Cmd is optional (defaults to shell)
-    # Layout: first pane is the tab, subsequent panes are splits
-    # Pattern: Operator (top-left) | Coordinator (top-right)
-    #          Feature  (bot-left) | Refactor   (bot-right)
+    # Layout:
+    # ┌──────────────┬──────────────┬──────────────┐
+    # │ Coordinator  │              │              │
+    # │  (claude)    │   Refactor   │  Feature #1  │
+    # ├──────────────┤   (claude)   │  (claude)    │
+    # │  Operator    │              │              │
+    # │  (shell)     │              │              │
+    # └──────────────┴──────────────┴──────────────┘
+    #
+    # Build order:
+    #   1. new-tab: Coordinator
+    #   2. split-pane -V: each full-height column (Refactor, Feature, ...)
+    #   3. move-focus back to Coordinator
+    #   4. split-pane -H: Operator below Coordinator
 
-    $repoDir = Resolve-NativePath $RepoRoot
+    $coordDir = Resolve-NativePath $CoordinatorDir
+    $repoDir  = Resolve-NativePath $RepoRoot
 
-    $args = @(
+    $wtArgs = @(
         '--window', 'multiclaude',
-        'new-tab', '--title', $Panes[0].Title, '-d', $repoDir
+        'new-tab', '--title', 'Coordinator', '-d', "`"$coordDir`"", '--', 'claude'
     )
 
-    for ($i = 1; $i -lt $Panes.Count; $i++) {
-        $pane = $Panes[$i]
-        $dir = Resolve-NativePath $pane.Dir
+    # Add full-height columns left to right.
+    # First column split gets (N)/(N+1) of the space so all columns end up equal width.
+    # e.g. 2 columns: first split takes 2/3, second split takes 1/2 of that = 1/3 each.
+    $n = $Columns.Count
+    for ($i = 0; $i -lt $n; $i++) {
+        $col = $Columns[$i]
+        $dir = Resolve-NativePath $col.Dir
+        $size = [math]::Round(($n - $i) / ($n - $i + 1), 4)
 
-        $args += ';'
-        $args += 'split-pane'
-
-        if ($pane.ContainsKey('Split')) {
-            $args += $pane.Split  # -V or -H
-        }
-        else {
-            $args += '-V'
-        }
-
-        if ($pane.ContainsKey('Size')) {
-            $args += '-s'
-            $args += $pane.Size
-        }
-
-        $args += '--title'
-        $args += $pane.Title
-        $args += '-d'
-        $args += $dir
-
-        if ($pane.ContainsKey('Cmd') -and $pane.Cmd) {
-            $args += '--'
-            $args += $pane.Cmd
+        $wtArgs += ';'
+        $wtArgs += @('split-pane', '-V', '-s', "$size", '--title', $col.Title, '-d', "`"$dir`"")
+        if ($col.ContainsKey('Cmd') -and $col.Cmd) {
+            $wtArgs += @('--', $col.Cmd)
         }
     }
 
-    # wt's semicolons are tricky in PowerShell; use cmd /c as reliable fallback
-    $wtCmd = "wt " + ($args -join ' ')
+    # Move focus back to Coordinator (leftmost pane)
+    for ($i = 0; $i -lt $n; $i++) {
+        $wtArgs += @(';', 'move-focus', '-d', 'left')
+    }
+
+    # Split Coordinator horizontally to create Operator below
+    $wtArgs += @(';', 'split-pane', '-H', '--title', 'Operator', '-d', "`"$repoDir`"")
+
+    $wtCmd = "wt " + ($wtArgs -join ' ')
     cmd /c $wtCmd
 }

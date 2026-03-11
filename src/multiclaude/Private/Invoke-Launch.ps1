@@ -24,16 +24,14 @@ function Invoke-Launch {
     # 3. Launch terminal layout
     Write-Host "`nLaunching terminal layout..." -ForegroundColor White
 
-    $panes = @(
-        @{ Title = 'Operator' }
-        @{ Title = 'Coordinator'; Dir = $coordDir;    Cmd = 'claude'; Split = '-V' }
-        @{ Title = 'Refactor';    Dir = $refactorDir;  Cmd = 'claude'; Split = '-H'; Size = '0.5' }
-        @{ Title = 'Feature #1';  Dir = $featureDir;   Cmd = 'claude'; Split = '-V' }
+    $columns = @(
+        @{ Title = 'Refactor';   Dir = $refactorDir;  Cmd = 'claude' }
+        @{ Title = 'Feature #1'; Dir = $featureDir;   Cmd = 'claude' }
     )
 
     switch ($mux) {
-        'wt'   { New-WtLayout   -RepoRoot $repoRoot -Panes $panes }
-        'tmux' { New-TmuxLayout -RepoRoot $repoRoot -Panes $panes }
+        'wt'   { New-WtLayout   -RepoRoot $repoRoot -CoordinatorDir $coordDir -Columns $columns }
+        'tmux' { New-TmuxLayout -RepoRoot $repoRoot -CoordinatorDir $coordDir -Columns $columns }
     }
 
     Write-Host "`n=== multiclaude: ready ===" -ForegroundColor Green
