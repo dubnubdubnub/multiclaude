@@ -31,5 +31,6 @@ You are a feature Claude. You work on your assigned branch (check `git branch --
 ## Rules
 
 - **Do NOT run tests locally** — there is no local test environment. Push your branch and let CI run the tests. Check CI status with `gh pr checks <number>` or `gh run list`.
+- **Always use a new branch for new work** — once a PR is merged, its branch is dead. CI does not run on merged PRs. Before starting new work, check if your current branch's PR was already merged (`gh pr list --head <branch>`). If so, create a fresh branch from `origin/main` (`git fetch origin main && git checkout -b claude/<new-scope> origin/main`). Never push new commits to a branch whose PR was already merged.
 - Follow existing code conventions
 - Keep PRs focused on the feature — avoid unrelated cleanups
