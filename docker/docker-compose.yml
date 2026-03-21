@@ -1,0 +1,28 @@
+services:
+  claude:
+    build: .
+    volumes:
+      # ── Code directory (read-write) ─────────────────────────
+      - ${MULTICLAUDE_HOST_DIR:-.}:/workspace
+
+      # ── SSH keys (mounted read-only, entrypoint copies & fixes perms)
+      - ${USERPROFILE:-.}/.ssh:/tmp/ssh-host:ro
+
+      # ── Git config (read-only) ──────────────────────────────
+      - ${USERPROFILE:-.}/.gitconfig:/tmp/gitconfig-host:ro
+
+      # ── Claude Code OAuth credentials (read-only) ──────────
+      - ${USERPROFILE:-.}/.claude/.credentials.json:/tmp/claude-credentials.json:ro
+
+      # ── Persistent Claude Code state (memories, etc.) ───────
+      - claude-data:/root/.claude
+
+    environment:
+      - GH_TOKEN=${GH_TOKEN}
+
+    working_dir: ${MULTICLAUDE_WORKDIR:-/workspace}
+    stdin_open: true
+    tty: true
+
+volumes:
+  claude-data:

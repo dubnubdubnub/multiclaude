@@ -3,7 +3,8 @@ function New-WtLayout {
     param(
         [Parameter(Mandatory)][string]$RepoRoot,
         [Parameter(Mandatory)][string]$CoordinatorDir,
-        [Parameter()][hashtable[]]$Columns = @()
+        [Parameter()][hashtable[]]$Columns = @(),
+        [Parameter()][string]$ClaudeCmd = 'claude'
     )
 
     # Layout:
@@ -26,7 +27,7 @@ function New-WtLayout {
 
     $wtArgs = @(
         '--window', 'multiclaude', '--maximized',
-        'new-tab', '--title', 'Coordinator', '-d', "`"$coordDir`"", '--', 'claude'
+        'new-tab', '--title', 'Coordinator', '-d', "`"$coordDir`"", '--', $ClaudeCmd
     )
 
     # Add full-height columns left to right.

@@ -38,10 +38,19 @@ function Invoke-MultiClaude {
         [string]$Command = "launch",
 
         [Parameter(Position = 1)]
-        [string]$Name = ""
+        [string]$Name = "",
+
+        [Parameter()]
+        [switch]$Sandbox
     )
 
     Set-StrictMode -Version Latest
+
+    # When -Sandbox is used, run Claude Code inside a Docker container
+    # instead of directly on the host.
+    if ($Sandbox) {
+        $script:UseSandbox = $true
+    }
 
     switch ($Command.ToLower()) {
         "launch"       { Invoke-Launch }
@@ -62,6 +71,7 @@ function Invoke-MultiClaude {
             Write-Host "  multiclaude test                     (alias for refactor)"
             Write-Host "  multiclaude add-feature <name>       Add a new feature Claude pane"
             Write-Host "  multiclaude cleanup                  Remove all multiclaude worktrees"
+            Write-Host "  multiclaude -Sandbox ...             Run Claude inside Docker sandbox"
             throw "Unknown command: $Command"
         }
     }

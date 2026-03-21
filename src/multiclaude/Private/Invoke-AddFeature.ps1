@@ -18,6 +18,12 @@ function Invoke-AddFeature {
     $featureDir = New-MultiClaudeWorktree $repoRoot $repoName $role $branch
     Install-RoleClaude $featureDir (Join-Path $rolesDir "feature.md")
 
+    # Resolve claude command (native or sandboxed)
+    $claudeCmd = 'claude'
+    if ($script:UseSandbox) {
+        $claudeCmd = Join-Path (Join-Path $PSScriptRoot '..\..\..\..\docker') 'claude-sandboxed.cmd'
+    }
+
     # Add as a full-height column to the right
     switch ($mux) {
         'wt' {
@@ -25,12 +31,12 @@ function Invoke-AddFeature {
             # Move focus to the rightmost pane before splitting so the new column
             # appears at the far right edge, not beside the currently focused pane.
             $moveFocus = "move-focus -d right ; " * 10
-            $wtCmd = "wt -w multiclaude ${moveFocus}split-pane -V --title `"Feature: $safeName`" -d `"$dir`" -- claude"
+            $wtCmd = "wt -w multiclaude ${moveFocus}split-pane -V --title `"Feature: $safeName`" -d `"$dir`" -- $claudeCmd"
             cmd /c $wtCmd
         }
         'tmux' {
             tmux split-window -h -t multiclaude -c $featureDir
-            tmux send-keys -t multiclaude 'claude' Enter
+            tmux send-keys -t multiclaude $claudeCmd Enter
         }
     }
 

@@ -3,7 +3,8 @@ function New-TmuxLayout {
     param(
         [Parameter(Mandatory)][string]$RepoRoot,
         [Parameter(Mandatory)][string]$CoordinatorDir,
-        [Parameter()][hashtable[]]$Columns = @()
+        [Parameter()][hashtable[]]$Columns = @(),
+        [Parameter()][string]$ClaudeCmd = 'claude'
     )
 
     # Layout:
@@ -27,7 +28,7 @@ function New-TmuxLayout {
 
     # Pane 0: Coordinator
     tmux new-session -d -s $sessionName -c $CoordinatorDir
-    tmux send-keys -t "${sessionName}:0.0" 'claude' Enter
+    tmux send-keys -t "${sessionName}:0.0" $ClaudeCmd Enter
 
     # Full-height columns, each split from the previous rightmost pane.
     # Left column (Coordinator/Operator) gets 40% width; right columns split the remaining 60% equally.

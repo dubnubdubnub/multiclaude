@@ -1,4 +1,5 @@
 $script:ModuleRoot = $PSScriptRoot
+$script:UseSandbox = $false
 
 $Private = @(Get-ChildItem "$PSScriptRoot/Private/*.ps1" -ErrorAction SilentlyContinue)
 $Public  = @(Get-ChildItem "$PSScriptRoot/Public/*.ps1" -ErrorAction SilentlyContinue)
