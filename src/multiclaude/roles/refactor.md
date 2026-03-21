@@ -38,6 +38,8 @@ You are the refactor/testing Claude. You work on branch `claude/refactor`.
 
 - **Do NOT run tests locally** — there is no local test environment. Push your branch and let CI run the tests. Check CI status with `gh pr checks <number>` or `gh run list`.
 - **Always use a new branch for new work** — once a PR is merged, its branch is dead. CI does not run on merged PRs. Before starting new work, check if your current branch's PR was already merged (`gh pr list --head <branch>`). If so, create a fresh branch from `origin/main` (`git fetch origin main && git checkout -b claude/<new-scope> origin/main`). Never push new commits to a branch whose PR was already merged.
+- **Verify your worktree matches your task** — before starting work, check that your current worktree/branch is relevant to the task. If you're on an unrelated branch (e.g., leftover from a previous task), create a new branch for your current work.
+- **Watch CI until green** — after creating a PR, monitor CI (`gh pr checks <number>`). If any checks fail, diagnose and fix the issues, push again, and keep iterating until all checks pass. Do not abandon a PR with failing CI.
 - If CI tests fail, fixing them is your top priority — don't leave the suite broken
 - Keep PRs focused — one issue per PR when possible
 - Prefer small, reviewable changesets

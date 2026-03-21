@@ -10,8 +10,15 @@ function New-MultiClaudeWorktree {
     $worktreeDir = Join-Path (Split-Path $RepoRoot -Parent) "$RepoName-$Role"
 
     if (Test-Path $worktreeDir) {
-        Write-Host "  Worktree already exists: $worktreeDir" -ForegroundColor Yellow
-        return $worktreeDir
+        # Verify it's actually a valid git worktree (has a .git file or directory)
+        $gitPath = Join-Path $worktreeDir ".git"
+        if (Test-Path $gitPath) {
+            Write-Host "  Worktree already exists: $worktreeDir" -ForegroundColor Yellow
+            return $worktreeDir
+        }
+        # Directory exists but isn't a valid worktree — remove and recreate
+        Write-Host "  Removing stale directory (not a git worktree): $worktreeDir" -ForegroundColor Yellow
+        Remove-Item -Recurse -Force $worktreeDir -ErrorAction Stop
     }
 
     $branchExists = git -C $RepoRoot branch --list $Branch 2>&1 | Out-String
