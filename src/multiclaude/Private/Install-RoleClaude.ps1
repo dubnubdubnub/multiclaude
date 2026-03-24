@@ -16,6 +16,12 @@ function Install-RoleClaude {
         $existingContent = Get-Content $claudeMdPath -Raw
     }
 
+    # Skip if role instructions are already present
+    if ($existingContent -match '# Role Instructions \(auto-injected by multiclaude\)') {
+        Write-Host "  Role already present in: $claudeMdPath (skipped)" -ForegroundColor DarkCyan
+        return
+    }
+
     $roleContent = Get-Content $RoleTemplate -Raw
     $separator = "`n`n---`n`n# Role Instructions (auto-injected by multiclaude)`n`n"
     $combined = $existingContent + $separator + $roleContent
